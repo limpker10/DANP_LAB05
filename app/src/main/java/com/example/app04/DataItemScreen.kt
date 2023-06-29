@@ -1,16 +1,33 @@
 package com.example.app04
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.PagingData
@@ -36,18 +53,37 @@ fun DataItemScreen(viewModel: DataItemViewModel) {
         lazyDataItems.apply {
             when {
                 loadState.refresh is LoadState.Loading -> {
-                    item { /* Mostrar un indicador de carga durante la actualización */ }
-                }
-                loadState.append is LoadState.Loading -> {
-                    item { /* Mostrar un indicador de carga durante la carga de más elementos */ }
+                    item {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
                 loadState.refresh is LoadState.Error -> {
                     val errorMessage = (loadState.refresh as LoadState.Error).error.message
-                    item { /* Mostrar un mensaje de error durante la actualización */ }
+                    item {
+                        Text(
+                            text = "Error: $errorMessage",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            color = Color.Red,
+                        )
+                    }
                 }
-                loadState.append is LoadState.Error -> {
-                    val errorMessage = (loadState.append as LoadState.Error).error.message
-                    item { /* Mostrar un mensaje de error durante la carga de más elementos */ }
+                loadState.append is LoadState.NotLoading -> {
+
+                        item {
+                            Text(
+                                text = "No hay mas registros disponibles",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+
+                            )
+                        }
+
                 }
             }
         }
@@ -55,21 +91,55 @@ fun DataItemScreen(viewModel: DataItemViewModel) {
 }
 @Composable
 fun DataItemCard(dataItem: DataItem) {
-    // Placeholder implementation for rendering each dataItem
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+        ),
 
     ) {
-        Column(
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = dataItem.id.toString())
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = dataItem.temperature)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = dataItem.temperature)
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_thermostat_24),
+                    contentDescription = "Favorite",
+                    modifier = Modifier.size(48.dp)
+                )
+                Text(
+                    text = "ID: "+ dataItem.id.toString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Row() {
+
+                    Text(
+                        text = dataItem.temperature,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = dataItem.unidad,
+                        style = MaterialTheme.typography.headlineMedium,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = dataItem.timestamp,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
         }
     }
 }

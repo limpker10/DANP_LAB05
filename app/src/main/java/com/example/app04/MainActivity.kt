@@ -7,27 +7,41 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHost
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.example.app04.ui.theme.App04Theme
 
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
         setContent {
-            App04Theme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    //DataItemScreen(DataItemViewModel())
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "Home") {
+                composable("Home") {
+                    App04Theme {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ){
+                            HomeScreen(HomeViewModel(),navController)
+                        }
+                    }
 
-                    HomeScreen(HomeViewModel())
+                }
+                composable("TempList") {
+                    App04Theme {
+                        Surface(
+                            modifier = Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ){
+                            DataItemScreen(DataItemViewModel())
+                        }
+                    }
                 }
             }
+
         }
     }
 }
